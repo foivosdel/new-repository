@@ -55,6 +55,7 @@ async function loadMovies() {
 
   try {
     const response = await fetch("movies.json");
+    // όριο 80
     if (!response.ok) {
       throw new Error("Δεν βρέθηκαν τα δεδομένα.");
     }
@@ -65,15 +66,21 @@ async function loadMovies() {
   }
 }
 
-function randomMovie() {
+ let nextEra = "new";
+  function randomMovie() {
   const el = document.getElementById("movie");
 
   if (!movies.length) {
     el.textContent = "Δεν έχουν φορτωθεί ακόμη οι ταινίες.";
     return;
   }
+ 
+  const oldMovies = movies.filter(m => m.year < 1980);
+  const newMovies = movies.filter(m => m.year >= 1980); 
+const pool = nextEra === "new" ? newMovies : oldMovies;
+const movie = pool[Math.floor(Math.random() * pool.length)];
+nextEra = nextEra === "new" ? "old" : "new";
 
-  const movie = movies[Math.floor(Math.random() * movies.length)];
 
   el.replaceChildren();
 
