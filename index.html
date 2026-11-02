@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IMDb Random Movie</title>
+<style>
+body {
+  background: #141414;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 35px 15px;
+}
+h1 { color: #f5c518; }
+button {
+  background: #f5c518;
+  color: black;
+  border: none;
+  border-radius: 12px;
+  padding: 18px 25px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 12px;
+}
+#movie {
+  margin: 30px auto;
+  max-width: 500px;
+  font-size: 20px;
+  line-height: 1.8;
+}
+a { color: #f5c518; }
+</style>
+</head>
+<body>
+
+<h1>🎬 IMDb Random Movie</h1>
+<p>Ταινίες από όλες τις εποχές!</p>
+<p>Πάνω από 1.000 ψήφοι στο IMDb</p>
+
+<button onclick="randomMovie()">
+🎲 ΤΥΧΑΙΑ ΤΑΙΝΙΑ
+</button>
+
+<div id="movie">Πάτησε το κουμπί!</div>
+
+<script>
+let movies = [];
+
+async function loadMovies() {
+  const el = document.getElementById("movie");
+  el.textContent = "Φόρτωση ταινιών...";
+
+  try {
+    const response = await fetch("movies.json");
+    if (!response.ok) {
+      throw new Error("Δεν βρέθηκαν τα δεδομένα.");
+    }
+    movies = await response.json();
+    el.textContent = "Έτοιμο! Πάτησε το κουμπί.";
+  } catch (e) {
+    el.textContent = "Σφάλμα φόρτωσης: " + e.message;
+  }
+}
+
+function randomMovie() {
+  const el = document.getElementById("movie");
+
+  if (!movies.length) {
+    el.textContent = "Δεν έχουν φορτωθεί ακόμη οι ταινίες.";
+    return;
+  }
+
+  const movie = movies[Math.floor(Math.random() * movies.length)];
+
+  el.replaceChildren();
+
+  const title = document.createElement("h2");
+  title.textContent = movie.title;
+
+  const info = document.createElement("p");
+  info.textContent =
+    "Έτος: " + movie.year +
+    " | IMDb: " + movie.rating +
+    " | Ψήφοι: " + movie.votes;
+
+  const link = document.createElement("a");
+  link.href = "https://www.imdb.com/title/" +
+    encodeURIComponent(movie.id) + "/";
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = "Δες την ταινία στο IMDb";
+
+  el.append(title, info, link);
+}
+
+loadMovies();
+</script>
+</body>
+</html>
